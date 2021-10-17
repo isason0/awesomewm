@@ -92,15 +92,15 @@ theme.menu_width  = dpi(100)
 
 -- Define the image to load
 --theme.titlebar_close_button_normal = themes_path.."default/titlebar/close_normal.png"
-theme.titlebar_close_button_normal = "/home/tom/.config/awesome/themes/default/titlebar/normal_inactive.png"
+theme.titlebar_close_button_normal = "/home/tomh0/.config/awesome/themes/default/titlebar/normal_inactive.png"
 --theme.titlebar_close_button_focus  = themes_path.."default/titlebar/close_focus.png"
-theme.titlebar_close_button_focus  = "/home/tom/.config/awesome/themes/default/titlebar/close_normal.png"
-theme.titlebar_close_button_focus_hover = "/home/tom/.config/awesome/themes/default/titlebar/close_normal-active.png"
+theme.titlebar_close_button_focus  = "/home/tomh0/.config/awesome/themes/default/titlebar/close_normal.png"
+theme.titlebar_close_button_focus_hover = "/home/tomh0/.config/awesome/themes/default/titlebar/close_normal-active.png"
 --theme.titlebar_minimize_button_normal = themes_path.."default/titlebar/minimize_normal.png"
-theme.titlebar_minimize_button_normal = "/home/tom/.config/awesome/themes/default/titlebar/normal_inactive.png"
+theme.titlebar_minimize_button_normal = "/home/tomh0/.config/awesome/themes/default/titlebar/normal_inactive.png"
 --theme.titlebar_minimize_button_focus  = themes_path.."default/titlebar/minimize_focus.png"
-theme.titlebar_minimize_button_focus = "/home/tom/.config/awesome/themes/default/titlebar/minimize_normal.png"
-theme.titlebar_minimize_button_focus_hover = "/home/tom/.config/awesome/themes/default/titlebar/minimize_normal-active.png"
+theme.titlebar_minimize_button_focus = "/home/tomh0/.config/awesome/themes/default/titlebar/minimize_normal.png"
+theme.titlebar_minimize_button_focus_hover = "/home/tomh0/.config/awesome/themes/default/titlebar/minimize_normal-active.png"
 
 theme.titlebar_ontop_button_normal_inactive = themes_path.."default/titlebar/ontop_normal_inactive.png"
 theme.titlebar_ontop_button_focus_inactive  = themes_path.."default/titlebar/ontop_focus_inactive.png"

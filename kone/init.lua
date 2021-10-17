@@ -9,7 +9,11 @@ local ff_imagebox
 local tm_imagebox
 local pn_imagebox
 local ms_imagebox
-local kritarun = "/home/tom/Applications/krita-4.4.5-x86_64.appimage"
+local lk_imagebox
+local kritarun = "krita"
+local kpsxc = "keepassxc"
+local cmusrun = "kitty cmus"
+--local kritarun = "/home/tom/Applications/krita-4-4-5.appimage"
 
 matchers = false
 
@@ -54,6 +58,14 @@ tm_imagebox = wibox.widget {
     valign = "center",
     widget = wibox.widget.textbox,
 }
+-- Keepassxc Icon
+lk_imagebox = wibox.widget {
+    markup = "",
+    font = "Fira Code Nerd Font 35",
+    align = "center",
+    valign = "center",
+    widget = wibox.widget.textbox,
+}
 -- Matcher mode indicator
 mM_imagebox = wibox.widget {
     markup = "",
@@ -77,6 +89,9 @@ end
 local pn_matcher = function(c)
     return awful.rules.match(c, {class = 'krita'})
 end
+local lk_matcher = function(c)
+    return awful.rules.match(c, {class = 'keepassxc'})
+end
 
 local tm_pressed = function(button)
     if matchers == true then
@@ -99,10 +114,22 @@ local pn_pressed = function(button)
         awful.spawn(kritarun)
     end
 end
+local lk_pressed = function(button)
+    if matchers == true then
+        awful.client.run_or_raise(kpsxc, lk_matcher)
+    else
+        awful.spawn(kpsxc)
+    end
+end
+local ms_pressed = function(button)
+        awful.spawn(cmusrun)
+end
 
 tm_imagebox:connect_signal("button::press", tm_pressed)
 ff_imagebox:connect_signal("button::press", ff_pressed)
 pn_imagebox:connect_signal("button::press", pn_pressed)
+lk_imagebox:connect_signal("button::press", lk_pressed)
+ms_imagebox:connect_signal("button::press", ms_pressed)
 --}}}
 
 
@@ -131,6 +158,11 @@ local tmcont = wibox.widget{
     fg = "#50fa7bb3",
     widget = wibox.container.background
 }
+local lkcont = wibox.widget{
+    lk_imagebox,
+    fg = "#ffb86cb3",
+    widget = wibox.container.background
+}
 local mMfcont = wibox.widget{
     mM_imagebox,
     fg = "#ff79c6b3",
@@ -149,6 +181,11 @@ local mMscont = wibox.widget{
 local mMpcont = wibox.widget{
     mM_imagebox,
     fg = "#8be9fdb3",
+    widget = wibox.container.background
+}
+local mMlcont = wibox.widget{
+    mM_imagebox,
+    fg = "#ffb86cb3",
     widget = wibox.container.background
 }
 
@@ -179,6 +216,12 @@ pncont:connect_signal("mouse::enter", function()
 end)
 pncont:connect_signal("mouse::leave", function()
     pncont.fg = "#8be9fdb3"
+end)
+lkcont:connect_signal("mouse::enter", function()
+    lkcont.fg = "#ffb86c"
+end)
+lkcont:connect_signal("mouse::leave", function()
+    lkcont.fg = "#ffb86cb3"
 end)
 --}}}
 
@@ -221,6 +264,11 @@ konebox:setup{
                 layout = wibox.layout.flex.vertical, --.-
                 pncont,
                 mMpcont,
+            },
+            {
+                layout = wibox.layout.flex.vertical, --.-
+                lkcont,
+                mMlcont,
             },
     },
     widget = wibox.container.background,

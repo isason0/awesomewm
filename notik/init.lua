@@ -24,6 +24,10 @@ local pwcmd = [[
     sh -c "
     cat /sys/class/power_supply/BAT0/capacity
     "]]
+local accmd = [[
+    sh -c "
+    cat /sys/class/power_supply/AC/online
+    "]]
 -- -:- brightness cmd
 local brcmd = [[
     sh -c "
@@ -38,6 +42,17 @@ local vmcmd = [[
 local mutecmd = [[
     sh -c "
     /usr/bin/pulsemixer --get-mute
+    "]]
+local lockcmd = [[
+    sh -c "
+    i3lock -ei $HOME/Backgrounds/someday_aenami.png &&
+    sleep 1 &&
+    xset dpms force off
+    "]]
+local suspcmd = [[
+    sh -c "
+    i3lock -ei $HOME/Backgrounds/someday_aenami.png &&
+    systemctl suspend
     "]]
 
 -- Progressbars for brightness, battery state and volume
@@ -96,57 +111,6 @@ vm_tex = wibox.widget {
 }
 --}}}
 
--- Timers : {{{
--- Get battery state every n seconds
-gears.timer {
-    timeout = 10,
-    call_now = true,
-    autostart = true,
-    callback = function()
-        awful.spawn.with_line_callback(pwcmd, {
-        stdout = function(line)
-            pw_tex.markup = line
-            Value = tonumber(line)
-            pw_progressbar.value = Value
-        end
-    })
-    end
-}
-
--- Adjust brightness every 8 seconds, because
--- awesomewm is a single threaded fuck and acpilight lags
-gears.timer {
-    timeout = 8,
-    call_now = true,
-    autostart = true,
-    callback = function()
-        awful.spawn.with_line_callback(brcmd, {
-            stdout = function(line)
-                br_tex.markup = line
-                brTest = tonumber(line)
-                br_progressbar.value = brTest
-            end
-        })
-    end
-}
--- Same thing for volume but every 30 seconds.
-gears.timer {
-    timeout = 30,
-    call_now = true,
-    autostart = true,
-    callback = function()
-        awful.spawn.with_line_callback(vmcmd, {
-            stdout = function(line)
-                vm_tex.markup = line
-                vmTest = tonumber(line)
-                vm_progressbar.value = vmTest
-            end
-        })
-    end
-}
-
---}}}
-
 -- Icons for brightness, battery and volume
 -- {{{
 br_ico = wibox.widget {
@@ -157,8 +121,8 @@ br_ico = wibox.widget {
     widget = wibox.widget.textbox
 }
 pw_ico = wibox.widget {
-    markup = "",
-    font = "Fira Code Nerd Font 26",
+    --markup = "",
+    font = "Fira Code Nerd Font 28",
     align = "left",
     valign = "center",
     widget = wibox.widget.textbox
@@ -204,17 +168,90 @@ lgo_ico = wibox.widget {
     widget = wibox.widget.textbox
 }
 lgo_ico:connect_signal("button::press", function()
-    awful.spawn.with_shell("sleep 0.4; xset dpms force off")
+    awful.spawn.with_shell(lockcmd)
 end)
 slp_ico:connect_signal("button::press", function()
-    awful.spawn.with_shell("loginctl suspend")
+    awful.spawn.with_shell(suspcmd)
+    -- loginctl suspend for elogind
 end)
--- !! super specific to my system :
+-- !! super specific to my system :D
 sdn_ico:connect_signal("button::press", function()
-    awful.spawn("loginctl hibernate")
+    awful.spawn("kitty sh -c 'echo Shut down your system?; read && shutdown now'")
 end)
 
 --}}}
+
+--pw_ico.markup = "",
+
+-- Timers : {{{
+-- Get battery state every n seconds
+gears.timer {
+    timeout = 10,
+    call_now = true,
+    autostart = true,
+    callback = function()
+        awful.spawn.with_line_callback(pwcmd, {
+        stdout = function(line)
+            pw_tex.markup = line
+            Value = tonumber(line)
+            pw_progressbar.value = Value
+        end
+    })
+    end
+}
+-- Check for AC power every n seconds
+gears.timer {
+    timeout = 8,
+    call_now = true,
+    autostart = true,
+    callback = function()
+        awful.spawn.with_line_callback(accmd, {
+            stdout = function(line)
+                local val = tonumber(line)
+                if val == 1 then
+                    pw_ico.markup = ""
+                else
+                    pw_ico.markup = ""
+                end
+            end
+        })
+    end
+}
+
+-- Adjust brightness every n seconds, because
+-- awesomewm is a single threaded fuck and acpilight lags
+gears.timer {
+    timeout = 8,
+    call_now = true,
+    autostart = true,
+    callback = function()
+        awful.spawn.with_line_callback(brcmd, {
+            stdout = function(line)
+                br_tex.markup = line
+                brTest = tonumber(line)
+                br_progressbar.value = brTest
+            end
+        })
+    end
+}
+-- Same thing for volume but every 30 seconds.
+gears.timer {
+    timeout = 30,
+    call_now = true,
+    autostart = true,
+    callback = function()
+        awful.spawn.with_line_callback(vmcmd, {
+            stdout = function(line)
+                vm_tex.markup = line
+                vmTest = tonumber(line)
+                vm_progressbar.value = vmTest
+            end
+        })
+    end
+}
+
+--}}}
+
 
 -- Tags & layouts : {{{
 -- make a tagbox
@@ -281,7 +318,11 @@ local pw_cont = wibox.widget {
     widget = wibox.container.background
 }
 local pw_contIco = wibox.widget {
-    pw_ico,
+    wibox.container.rotate(
+        wibox.layout.margin(
+            pw_ico,
+        0, 0, 23, 0),
+    "west"),
     fg = "#ff79c6",
     widget = wibox.container.background
 }
@@ -335,11 +376,9 @@ local l_cont = wibox.widget{
 -- systray :
 --tray_cont = wibox.container.place(notik_mysystray)
 tray_cont = wibox.widget {
-    wibox.layout.margin(
     notik_mysystray,
-    44, 0, 0, 0),
     valign = "center",
-    halign = "left",
+    halign = "center",
     widget = wibox.container.place
 }
 -- textclock :
@@ -459,12 +498,12 @@ notikbox = wibox {
     width = dpi(250),
     --height = dpi(955),
     height = dpi(885),
-    shape = function(cr,w ,h)
-        gears.shape.partially_rounded_rect(cr, w, h,
-        false, true, true, false)
-    end,
-    bg = "#1d1e26",
+    type = "dock",
+    --bg = "#1d1e26",
 }
+
+-- This allows for anti-aliasing on the corners
+notikbox.bg = "#12345600"
 
 -- Init widgets :
     -- Here you can change the order of widgets
@@ -487,5 +526,10 @@ notikbox:setup{
         tray_cont, --systray
         },
     },
+    bg = "#1d1e26",
+    shape = function(cr,w ,h)
+        gears.shape.partially_rounded_rect(cr, w, h,
+        false, true, true, false)
+    end,
     widget = wibox.container.background,
 }

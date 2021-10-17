@@ -79,7 +79,7 @@ beautiful.init(theme_path)
 terminal = "kitty"
 editor = "nvim"
 editor_cmd = terminal .. " -e " .. editor
-browser = "firefox-bin"
+browser = "firefox"
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -202,9 +202,9 @@ awful.screen.connect_for_each_screen(function(s)
     set_wallpaper(s)
 
     -- Each screen has its own tag table.
-    local names = { "", "", "ﱘ", "", ""}
+    local names = { "", "", "ﱘ", "", ""}
     local l = awful.layout.suit
-    local layouts = { l.tile, l.tile, l.tile, l.max, l.floating, }
+    local layouts = { l.tile, l.tile, l.tile, l.max, l.tile, }
     awful.tag(names, s, layouts)
 
     -- Create a promptbox for each screen
@@ -656,7 +656,8 @@ globalkeys = gears.table.join(
 
     -- Prompt
     awful.key( {modkey, }, "p", function()
-        awful.spawn.with_shell("dmenu_run -c -l 16")
+        --awful.spawn.with_shell("dmenu_run -c -l 16")
+        awful.spawn.with_shell("dmenu_run -i -l 16")
     end,
     { description = "run dmenu", group = "launcher" }),
 
@@ -902,11 +903,11 @@ client.connect_signal("request::titlebars", function(c)
 end)
 
 -- Rounded corners
-client.connect_signal("manage", function(c)
-    c.shape = function(cr, w, h)
-      gears.shape.rounded_rect(cr, w, h, 10)
-    end
-end)
+--client.connect_signal("manage", function(c)
+    --c.shape = function(cr, w, h)
+      --gears.shape.rounded_rect(cr, w, h, 10)
+    --end
+--end)
 
 
 
